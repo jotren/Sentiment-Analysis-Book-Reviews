@@ -1,0 +1,17 @@
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+/workbooks/.virtual_documents/
+
+# Python bytecode files
+__pycache__/
+
+# Specific directories
+/data/
+know_graph
+/workbooks/ipynb_checkpoints/
+/.virtual_documents/
+*.csv
+*.joblib
+/workbooks/lib/
+/models/
+/sentiment_env/
