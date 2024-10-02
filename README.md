@@ -53,6 +53,7 @@ I performed multiple sentiment analysis tests to capture the nuanced emotions in
 
 Both models were deployed locally to mimic a production environment:
 
+
 ```python
 # Binary Sentiment Analyzer
 model_name = "../models/distilbert-base-uncased-finetuned-sst-2-english"
@@ -65,6 +66,31 @@ emotion_analyzer = EmotionAnalyzerActor.remote(model_path)
 
 Ray was used for parallel processing to handle sentiment analysis efficiently:
 
+__Binary Classification__:
+
+```python
+# Define a Ray Actor to load the model and tokenizer once and reuse for multiple tasks
+@ray.remote
+class SentimentAnalyzerActor:
+    def __init__(self, model_name):
+        # Load the pre-trained DistilBERT model and tokenizer for sentiment analysis
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        self.pipeline = pipeline("sentiment-analysis", model=self.model, tokenizer=self.tokenizer)
+    
+    def analyze_sentiment(self, summary_text):
+        # Analyze sentiment of the given summary text
+        result = self.pipeline(summary_text, truncation=True, max_length=512)
+        # Return the label (POSITIVE/NEGATIVE) and score (confidence)
+        return result[0]['label'], result[0]['score']
+
+# Create an instance of the SentimentAnalyzerActor
+model_name = "../models/distilbert-base-uncased-finetuned-sst-2-english"
+sentiment_analyzer = SentimentAnalyzerActor.remote(model_name)
+
+```
+
+__Multi-modal Classification__:
 
 ```python
 @ray.remote
