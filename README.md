@@ -1,8 +1,9 @@
 # Book Sentiment Analysis
 
-### Introduction
-
 This project was designed to explore the performance of current sentiment analysis models on book reviews.
+
+![Sentiment Analysis Image](./images/sentiment-analysis-image.webp)
+
 
 ### Data
 
