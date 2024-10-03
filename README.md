@@ -133,7 +133,7 @@ My key takeaways from this project are:
 - The best way to prepare text for sentiment analysis is by using the BART model to summarize long reviews.
 - Both binary and multi-emotion sentiment models are necessary to capture the full nuance of a text.
 
-## How does Dataiku handle this Problem
+## Dataiku Approach
 
 Dataiku takes a different approach to sentiment analysis using __fastText__ for text vectorisation and training. This model does not come pretrained but it is able to be trained on the same Amazon Book Review data to then provide sentiment analysis. Below is a test script I would like to run:
 
@@ -171,3 +171,5 @@ This model is deployed somewhere on Dataiku to then run sentiment. It is much fa
 - **Memory Efficiency**: FastText requires significantly less memory because it deals with fewer parameters and does not need to handle complex attention mechanisms.
 - **Hierarchical Softmax** in FastText reduces the computational load for large vocabulary tasks, improving speed when compared to BERT's full softmax over all tokens.
 - **Target Use Case**: FastText is better suited for simple text classification tasks where speed and scalability are important, while BERT excels in tasks that require a deeper understanding of context but at a higher computational cost.
+
+This approach is much more robust with respect to scaling and computation. But almost certainly loses accuracy and nuance in the text.
