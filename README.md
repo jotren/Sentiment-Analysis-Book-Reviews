@@ -132,3 +132,42 @@ My key takeaways from this project are:
 - Sentiment analysis models require significant computation time. GPU acceleration and parallel processing are essential for performance.
 - The best way to prepare text for sentiment analysis is by using the BART model to summarize long reviews.
 - Both binary and multi-emotion sentiment models are necessary to capture the full nuance of a text.
+
+## How does Dataiku handle this Problem
+
+Dataiku takes a different approach to sentiment analysis using __fastText__ for text vectorisation and training. This model does not come pretrained but it is able to be trained on the same Amazon Book Review data to then provide sentiment analysis. Below is a test script I would like to run:
+
+```python
+import pandas as pd
+import fasttext
+
+# Load the CSV into a DataFrame
+df = pd.read_csv('amazon_books_reviews.csv')
+
+# Keep only the 'review/summary' and 'review/score' columns, and drop missing values
+df = df[['review/summary', 'review/score']].dropna()
+
+# Convert the 'review/score' (1-5) into FastText labels
+def score_to_label(score):
+    return f"__label__{int(score)}"
+
+# Apply the conversion to create a label column
+df['label'] = df['review/score'].apply(score_to_label)
+
+# Combine the label and review into a format for FastText
+df_fasttext = df[['label', 'review/summary']]
+
+# Write the formatted data to a text file in FastText's required format
+with open('fasttext_train_ratings.txt', 'w', encoding='utf-8') as f:
+    for index, row in df_fasttext.iterrows():
+        f.write(f"{row['label']} {row['review/summary']}\n")
+
+```
+This model is deployed somewhere on Dataiku to then run sentiment. It is much faster than using pretrained models because:
+
+- **FastText** uses **static word embeddings**, which means word vectors are precomputed and do not change based on context, leading to faster processing.
+- **BERT** uses **contextual embeddings**, requiring the model to compute relationships between words in every sentence, increasing computational complexity.
+- **FastText's shallow architecture** (linear model with logistic regression) makes it much faster for both training and inference compared to BERT’s deep transformer layers.
+- **Memory Efficiency**: FastText requires significantly less memory because it deals with fewer parameters and does not need to handle complex attention mechanisms.
+- **Hierarchical Softmax** in FastText reduces the computational load for large vocabulary tasks, improving speed when compared to BERT's full softmax over all tokens.
+- **Target Use Case**: FastText is better suited for simple text classification tasks where speed and scalability are important, while BERT excels in tasks that require a deeper understanding of context but at a higher computational cost.
